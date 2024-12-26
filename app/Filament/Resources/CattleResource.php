@@ -20,6 +20,7 @@ use Filament\Forms\Components\Wizard;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -84,12 +85,13 @@ class CattleResource extends Resource
                             ->schema([
                                 Money::make('value')
                                     ->label('Valor'),
-                                Money::make('comission_percentage')
+                                Money::make('commision_percentage')
                                     ->label('Porcentagem de Comissão')
-                                    ->prefix('%')
+                                    ->prefix(null)
+                                    ->suffix('%')
                                     ->minValue(0)
                                     ->maxValue(100),
-                                DatePicker::make('acquisition_date')
+                                DatePicker::make('aquisition_date')
                                     ->label('Data da Aquisição')
                                     ->columnSpanFull(),
                                 TextInput::make('number_installments')
@@ -97,8 +99,7 @@ class CattleResource extends Resource
                                     ->numeric()
                                     ->minValue(1),
                                 DatePicker::make('first_installment_date')
-                                    ->label('Data da Primeira Parcela')
-                                    ->required(),
+                                    ->label('Data da Primeira Parcela'),
                                 FileUpload::make('aquisition_contract_path')
                                     ->label('Contrato de Aquisição')
                                     ->columnSpanFull()
@@ -145,11 +146,19 @@ class CattleResource extends Resource
                             ->icon('heroicon-o-arrow-down-tray')
                             ->columns(2)
                             ->schema([
+                                Forms\Components\FileUpload::make('image_path')
+                                    ->label('Foto de Perfil')
+                                    ->columnSpanFull()
+                                    ->visibility('public')
+                                    ->maxSize(8 * 1024)
+                                    ->directory('public/cattle')
+                                    ->image()
+                                    ->imageEditor(),
                                 FileUpload::make('attachments')
                                     ->label('Anexos')
                                     ->columnSpanFull()
                                     ->visibility('public')
-                                    ->directory('public/attachments')
+                                    ->directory('public/cattle')
                                     ->downloadable(),
                             ])
                     ]),
@@ -164,7 +173,29 @@ class CattleResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('rgd')
+                    ->label('RGD')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('name')
+                    ->label('Nome')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('farm.name')
+                    ->label('Fazenda')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('gender')
+                    ->label('Sexo')
+                    ->badge()
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('type')
+                    ->label('Tipo')
+                    ->badge()
+                    ->sortable()
+                    ->searchable(),
+
             ])
             ->filters([
                 //

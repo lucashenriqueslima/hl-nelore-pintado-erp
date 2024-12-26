@@ -16,6 +16,10 @@ class WeightsRelationManager extends RelationManager
 {
     protected static string $relationship = 'weights';
 
+    protected static ?string $title = 'Pesos';
+    protected static ?string $modelLabel = 'Peso';
+
+
     public function form(Form $form): Form
     {
         return $form

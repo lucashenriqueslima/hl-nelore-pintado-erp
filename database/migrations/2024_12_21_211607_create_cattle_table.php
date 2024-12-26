@@ -26,6 +26,7 @@ return new class extends Migration
             $table->date('first_installment_date')->nullable();
             $table->string('aquisition_contract_path')->nullable();
             $table->string('sell_contract_path')->nullable();
+            $table->string('profile_photo_path')->nullable();
             $table->json('attachments')->nullable();
             $table->foreignId('farm_id')->constrained();
             $table->foreignId('father_id')->nullable()->constrained('cattle');
