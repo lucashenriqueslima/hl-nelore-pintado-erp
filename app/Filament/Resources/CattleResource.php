@@ -32,6 +32,8 @@ class CattleResource extends Resource
 
     protected static ?string $navigationIcon = 'fas-cow';
 
+    protected static ?string $modelLabel = 'Gado';
+
 
     public static function form(Form $form): Form
     {
@@ -105,14 +107,14 @@ class CattleResource extends Resource
                                     ->columnSpanFull()
                                     ->visibility('public')
                                     ->maxSize(5 * 1024)
-                                    ->directory('public/contracts')
+                                    ->directory('public/cattle/contracts')
                                     ->downloadable(),
                                 FileUpload::make('sell_contract_path')
                                     ->label('Contrato de Venda')
                                     ->columnSpanFull()
                                     ->visibility('public')
                                     ->maxSize(5 * 1024)
-                                    ->directory('public/contracts')
+                                    ->directory('public/cattle/contracts')
                                     ->downloadable(),
 
 
@@ -146,19 +148,19 @@ class CattleResource extends Resource
                             ->icon('heroicon-o-arrow-down-tray')
                             ->columns(2)
                             ->schema([
-                                Forms\Components\FileUpload::make('image_path')
+                                Forms\Components\FileUpload::make('profile_photo_path')
                                     ->label('Foto de Perfil')
                                     ->columnSpanFull()
                                     ->visibility('public')
-                                    ->maxSize(8 * 1024)
-                                    ->directory('public/cattle')
+                                    ->directory('public/cattle/profile-photo')
+                                    ->downloadable()
                                     ->image()
                                     ->imageEditor(),
                                 FileUpload::make('attachments')
                                     ->label('Anexos')
                                     ->columnSpanFull()
                                     ->visibility('public')
-                                    ->directory('public/cattle')
+                                    ->directory('public/cattle/attachments')
                                     ->downloadable(),
                             ])
                     ]),
@@ -195,6 +197,20 @@ class CattleResource extends Resource
                     ->badge()
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\ImageColumn::make('profile_photo_path')
+                    ->label('Foto de Perfil')
+                    ->circular(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Data de Criação')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Data da Ultima Atualização')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
             ])
             ->filters([
@@ -202,6 +218,7 @@ class CattleResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
