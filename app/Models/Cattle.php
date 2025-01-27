@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Cattle extends Model
 {
@@ -28,6 +29,25 @@ class Cattle extends Model
         ];
     }
 
+    protected function fullName(): Attribute
+    {
+        return Attribute::get(fn() => "{$this->rgd} | {$this->name}");
+    }
+
+    public function embryoFather(): HasMany
+    {
+        return $this->hasMany(Embryo::class, 'father_id');
+    }
+
+    public function embryoMother(): HasMany
+    {
+        return $this->hasMany(Embryo::class, 'mother_id');
+    }
+
+    public function embryoReceiver(): HasMany
+    {
+        return $this->hasMany(Embryo::class, 'receiver_id');
+    }
     public function farm(): BelongsTo
     {
         return $this->belongsTo(Farm::class);

@@ -9,13 +9,13 @@ use Filament\Support\Contracts\HasLabel;
 enum CattleType: string implements HasLabel, HasColor, HasIcon
 {
     case PO = 'po';
-    case RECIPIENT = 'recipient';
+    case RECEIVER = 'receiver';
 
     public function getLabel(): string
     {
         return match ($this) {
             self::PO => 'PO',
-            self::RECIPIENT => 'Receptora',
+            self::RECEIVER => 'Receptora',
         };
     }
 
@@ -23,7 +23,7 @@ enum CattleType: string implements HasLabel, HasColor, HasIcon
     {
         return match ($this) {
             self::PO => 'primary',
-            self::RECIPIENT => 'danger',
+            self::RECEIVER => 'danger',
         };
     }
 
@@ -31,7 +31,7 @@ enum CattleType: string implements HasLabel, HasColor, HasIcon
     {
         return match ($this) {
             self::PO => 'fas-dna',
-            self::RECIPIENT => 'fas-arrows-rotate',
+            self::RECEIVER => 'fas-arrows-rotate',
         };
     }
 }

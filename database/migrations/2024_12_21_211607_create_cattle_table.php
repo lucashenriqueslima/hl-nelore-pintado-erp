@@ -19,7 +19,7 @@ return new class extends Migration
             $table->date('aquisition_date')->nullable();
             $table->date('birth_date')->nullable();
             $table->date('death_date')->nullable();
-            $table->enum('type', ['po', 'recipient'])->nullable();
+            $table->enum('type', ['po', 'receiver'])->nullable();
             $table->decimal('value', 10, 2)->nullable();
             $table->decimal('commision_percentage', 5, 2)->nullable();
             $table->integer('number_installments')->nullable();

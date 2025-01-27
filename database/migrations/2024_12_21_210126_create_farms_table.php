@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('farms', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->boolean('farm_is_from_group');
             $table->timestamps();
         });
     }

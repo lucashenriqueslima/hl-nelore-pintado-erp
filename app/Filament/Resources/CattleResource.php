@@ -4,13 +4,24 @@ namespace App\Filament\Resources;
 
 use App\Enums\CattleType;
 use App\Enums\Gender;
+use App\Filament\Helpers\RouterHelper;
 use App\Filament\Resources\CattleResource\Pages;
 use App\Filament\Resources\CattleResource\RelationManagers;
+use App\Filament\Resources\CattleResource\RelationManagers\EmbryoFatherRelationManager;
+use App\Filament\Resources\CattleResource\RelationManagers\EmbryoMotherRelationManager;
+use App\Filament\Resources\CattleResource\RelationManagers\EmbryoReceiverRelationManager;
+use App\Filament\Resources\CattleResource\RelationManagers\FatherRelationManager;
+use App\Filament\Resources\CattleResource\RelationManagers\MotherRelationManager;
 use App\Filament\Resources\CattleResource\RelationManagers\WeightsRelationManager;
 use App\Models\Cattle;
+use App\Models\Farm;
+use Carbon\CarbonInterface;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Tabs\Tab;
@@ -25,6 +36,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Leandrocfe\FilamentPtbrFormFields\Money;
+use PhpParser\Node\Stmt\Label;
+use Illuminate\Support\HtmlString;
 
 class CattleResource extends Resource
 {
@@ -32,14 +45,15 @@ class CattleResource extends Resource
 
     protected static ?string $navigationIcon = 'fas-cow';
 
-    protected static ?string $modelLabel = 'Gado';
-
+    protected static ?string $modelLabel = 'Animal';
+    protected static ?string $pluralModelLabel = 'Rebanhos';
 
     public static function form(Form $form): Form
     {
+
+
         return $form
             ->schema([
-
                 Tabs::make()
                     ->columnSpanFull()
                     ->schema([
@@ -56,13 +70,18 @@ class CattleResource extends Resource
                                     ->required(),
                                 Select::make('farm_id')
                                     ->label('Fazenda')
-                                    ->relationship('farm', 'name')
+                                    ->relationship(name: 'farm')
+                                    ->getOptionLabelFromRecordUsing(fn(Farm $cattle) => "{$cattle->name} " . ($cattle->farm_is_from_group ? '*' : ''))
                                     ->columnSpanFull()
                                     ->required()
                                     ->createOptionForm([
                                         TextInput::make('name')
                                             ->label('Nome')
                                             ->required(),
+                                        ToggleButtons::make('farm_is_from_group')
+                                            ->label('Fazenda do Grupo?')
+                                            ->inline()
+                                            ->boolean(),
                                     ]),
                                 DatePicker::make('birth_date')
                                     ->label('Data de Nascimento'),
@@ -76,10 +95,7 @@ class CattleResource extends Resource
                                 ToggleButtons::make('type')
                                     ->label('Tipo')
                                     ->inline()
-                                    ->options(CattleType::class)
-                                    ->required(),
-
-
+                                    ->options(CattleType::class),
                             ]),
                         Tab::make('Dados Financeiros')
                             ->icon('heroicon-o-currency-dollar')
@@ -128,21 +144,72 @@ class CattleResource extends Resource
                                     ->relationship(
                                         name: 'father',
                                         titleAttribute: 'name',
-                                        modifyQueryUsing: fn(Builder $query) => $query->where('gender', Gender::MALE),
+                                        modifyQueryUsing: fn(Cattle $cattle, Builder $query) => $query->where('gender', Gender::MALE)
+                                            ->where('id', '!=', $cattle->id),
                                     )
+                                    ->preload()
                                     ->searchable(['rgd', 'name'])
-                                    ->getOptionLabelFromRecordUsing(fn(Cattle $record) => "{$record->rgd} | {$record->name}")
+                                    ->getOptionLabelFromRecordUsing(fn(Cattle $cattle) => "{$cattle->rgd} | {$cattle->name}")
                                     ->optionsLimit(10),
                                 Select::make('mother_id')
                                     ->label('Mãe')
                                     ->relationship(
                                         name: 'mother',
                                         titleAttribute: 'name',
-                                        modifyQueryUsing: fn(Builder $query) => $query->where('gender', Gender::FEMALE),
+                                        modifyQueryUsing: fn(Cattle $cattle, Builder $query) => $query->where('gender', Gender::FEMALE)
+                                            ->where('id', '!=', $cattle->id),
                                     )
+                                    ->preload()
                                     ->searchable(['rgd', 'name'])
-                                    ->getOptionLabelFromRecordUsing(fn(Cattle $record) => "{$record->rgd} | {$record->name}")
+                                    ->getOptionLabelFromRecordUsing(fn(Cattle $cattle) => "{$cattle->rgd} | {$cattle->name}")
                                     ->optionsLimit(10),
+                                Group::make()
+                                    ->schema(
+                                        [
+                                            Fieldset::make('Família do Pai')
+                                                ->schema([
+                                                    Placeholder::make('Pai')
+                                                        ->content(
+                                                            fn(Cattle $cattle): ?HtmlString => self::getAHtmlString($cattle->father?->id, "{$cattle->father?->rgd} {$cattle->father?->name}")
+                                                        )
+                                                        ->columnSpan(2),
+                                                    Placeholder::make('Avô')
+                                                        ->content(
+                                                            fn(Cattle $cattle): ?HtmlString => self::getAHtmlString($cattle->father?->father?->id, "{$cattle->father?->father?->rgd} {$cattle->father?->father?->name}")
+                                                        )
+                                                        ->columnSpan(1),
+                                                    Placeholder::make('Avó')
+                                                        ->content(fn(Cattle $cattle): ?HtmlString => self::getAHtmlString($cattle->father?->mother?->id, "{$cattle->father?->mother?->rgd} {$cattle->father?->mother?->name}"))
+                                                        ->columnSpan(1),
+                                                ])
+                                                ->columnSpan(2)
+                                                ->columns(2),
+                                            Fieldset::make('Família da Mãe')
+                                                ->schema([
+                                                    Placeholder::make('Mãe')
+                                                        ->content(
+                                                            fn(Cattle $cattle): ?HtmlString => self::getAHtmlString($cattle->mother?->id, "{$cattle->mother?->rgd} {$cattle->mother?->name}")
+                                                        )
+                                                        ->columnSpan(2),
+                                                    Placeholder::make('Avô')
+                                                        ->content(
+                                                            fn(Cattle $cattle): ?HtmlString => self::getAHtmlString($cattle->mother?->father?->id, "{$cattle->mother?->father?->rgd} {$cattle->mother?->father?->name}")
+                                                        )
+                                                        ->columnSpan(1),
+                                                    Placeholder::make('Avó / Mãe')
+                                                        ->content(fn(Cattle $cattle): ?HtmlString => self::getAHtmlString($cattle->mother?->mother?->id, "{$cattle->mother?->mother?->rgd} {$cattle->mother?->mother?->name}"))
+                                                        ->columnSpan(1),
+                                                ])
+                                                ->columnSpan(2)
+                                                ->columns(2),
+
+
+
+                                        ]
+                                    )
+                                    ->columns(4)
+                                    ->columnSpanFull()
+                                    ->hidden(fn(string $operation): bool => $operation !== 'edit'),
                             ]),
                         Tab::make('Anexos')
                             ->icon('heroicon-o-arrow-down-tray')
@@ -175,18 +242,15 @@ class CattleResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('rgd')
-                    ->label('RGD')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('name')
-                    ->label('Nome')
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('farm.name')
                     ->label('Fazenda')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('full_name')
+                    ->label('RGD | Nome')
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('gender')
                     ->label('Sexo')
                     ->badge()
@@ -197,10 +261,24 @@ class CattleResource extends Resource
                     ->badge()
                     ->sortable()
                     ->searchable(),
+                TextColumn::make('age_in_words')
+                    ->label('Idade por extenso')
+                    ->getStateUsing(function (Cattle $cattle) {
+                        if ($cattle->birth_date == null) {
+                            return null;
+                        }
+
+                        return $cattle->birth_date->diffForHumans(now(), [
+                            'syntax' => CarbonInterface::DIFF_ABSOLUTE,
+                            'parts' => 4,
+                            'join' => true,
+                        ]);
+                    })
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\ImageColumn::make('profile_photo_path')
                     ->label('Foto de Perfil')
                     ->circular(),
-
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Data de Criação')
                     ->dateTime()
@@ -229,8 +307,15 @@ class CattleResource extends Resource
 
     public static function getRelations(): array
     {
+
+        // $relations = self::handleRalations();
         return [
-            WeightsRelationManager::class
+            WeightsRelationManager::class,
+            // FatherRelationManager::class,
+            // MotherRelationManager::class,
+            EmbryoFatherRelationManager::class,
+            EmbryoMotherRelationManager::class,
+            EmbryoReceiverRelationManager::class,
         ];
     }
 
@@ -241,5 +326,17 @@ class CattleResource extends Resource
             'create' => Pages\CreateCattle::route('/create'),
             'edit' => Pages\EditCattle::route('/{record}/edit'),
         ];
+    }
+
+    private static function getAHtmlString(
+        ?string $id,
+        ?string $content
+    ): ?HtmlString {
+
+        if (!$id || !$content) {
+            return null;
+        }
+
+        return new HtmlString('<a style="text-decoration: underline !important" href="' . RouterHelper::getRoute('cattle', ['record' => $id]) . '" target="_blank">' . $content . ' </a>');
     }
 }

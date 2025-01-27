@@ -16,7 +16,7 @@ class WeightsRelationManager extends RelationManager
 {
     protected static string $relationship = 'weights';
 
-    protected static ?string $title = 'Pesos';
+    protected static ?string $title = 'Histórico de Peso';
     protected static ?string $modelLabel = 'Peso';
 
 
