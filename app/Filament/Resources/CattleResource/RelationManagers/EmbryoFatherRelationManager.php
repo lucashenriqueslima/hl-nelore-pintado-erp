@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class EmbryoFatherRelationManager extends RelationManager
 {
-    protected static string $relationship = 'embryoFather';
+    protected static string $relationship = 'embryoChildren';
     protected static ?string $title = 'Filhos / Embrião';
     protected static ?string $modelLabel = 'Filho';
 

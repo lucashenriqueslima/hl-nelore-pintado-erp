@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "54adbf5ad39bbd0672ef28f6788c3935",
+    "content-hash": "959dbbad7bc8a72dcf15dee9122b37d1",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -4630,6 +4630,76 @@
                 }
             ],
             "time": "2024-11-25T09:18:49+00:00"
+        },
+        {
+            "name": "pelmered/filament-money-field",
+            "version": "1.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pelmered/filament-money-field.git",
+                "reference": "66144132dc17452600d7134fdcd7a527472f8fd6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pelmered/filament-money-field/zipball/66144132dc17452600d7134fdcd7a527472f8fd6",
+                "reference": "66144132dc17452600d7134fdcd7a527472f8fd6",
+                "shasum": ""
+            },
+            "require": {
+                "ext-intl": "*",
+                "filament/support": "^v3.2.39",
+                "illuminate/support": "^11.0|^12.0",
+                "moneyphp/money": "^4.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "filament/filament": "^3.2",
+                "laravel/pint": "^1.16",
+                "nunomaduro/collision": "^8.0",
+                "orchestra/testbench": "^9.0",
+                "pestphp/pest": "^3.0",
+                "pestphp/pest-plugin-drift": "^3.0",
+                "pestphp/pest-plugin-type-coverage": "^3.0",
+                "phpstan/phpstan": "^1.12.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Pelmered\\FilamentMoneyField\\FilamentMoneyFieldServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Pelmered\\FilamentMoneyField\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Peter Elmered",
+                    "email": "peter@elmered.com"
+                }
+            ],
+            "support": {
+                "issues": "https://github.com/pelmered/filament-money-field/issues",
+                "source": "https://github.com/pelmered/filament-money-field/tree/1.5.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/pelmered",
+                    "type": "github"
+                },
+                {
+                    "url": "https://ko-fi.com/pelmered",
+                    "type": "ko_fi"
+                }
+            ],
+            "time": "2025-03-04T15:55:08+00:00"
         },
         {
             "name": "phpoption/phpoption",

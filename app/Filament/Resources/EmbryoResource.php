@@ -106,8 +106,8 @@ class EmbryoResource extends Resource
                                         redirect(static::getUrl('edit', ['record' => $embryo->id,]));
                                     }),
                             ),
-                        DatePicker::make('mating_date')
-                            ->label('Data do Cruzamento'),
+                        DatePicker::make('collection_date')
+                            ->label('Data da Coleta'),
                         ToggleButtons::make('gender')
                             ->label('Sexo')
                             ->inline()

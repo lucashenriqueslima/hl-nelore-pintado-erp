@@ -34,12 +34,22 @@ class Cattle extends Model
         return Attribute::get(fn() => "{$this->rgd} | {$this->name}");
     }
 
-    public function embryoFather(): HasMany
+    public function children(): HasMany
+    {
+        return $this->hasMany(Cattle::class, 'father_id');
+    }
+
+    public function daughters(): HasMany
+    {
+        return $this->hasMany(Cattle::class, 'mother_id');
+    }
+
+    public function embryoChildren(): HasMany
     {
         return $this->hasMany(Embryo::class, 'father_id');
     }
 
-    public function embryoMother(): HasMany
+    public function embryoDaughters(): HasMany
     {
         return $this->hasMany(Embryo::class, 'mother_id');
     }
@@ -56,6 +66,11 @@ class Cattle extends Model
     public function father(): BelongsTo
     {
         return $this->belongsTo(Cattle::class);
+    }
+
+    public function financialMovements()
+    {
+        return $this->morphMany(FinancialMovement::class, 'movementable');
     }
 
     public function mother(): BelongsTo

@@ -6,12 +6,9 @@ use App\Enums\CattleType;
 use App\Enums\Gender;
 use App\Filament\Helpers\RouterHelper;
 use App\Filament\Resources\CattleResource\Pages;
-use App\Filament\Resources\CattleResource\RelationManagers;
 use App\Filament\Resources\CattleResource\RelationManagers\EmbryoFatherRelationManager;
 use App\Filament\Resources\CattleResource\RelationManagers\EmbryoMotherRelationManager;
 use App\Filament\Resources\CattleResource\RelationManagers\EmbryoReceiverRelationManager;
-use App\Filament\Resources\CattleResource\RelationManagers\FatherRelationManager;
-use App\Filament\Resources\CattleResource\RelationManagers\MotherRelationManager;
 use App\Filament\Resources\CattleResource\RelationManagers\WeightsRelationManager;
 use App\Models\Cattle;
 use App\Models\Farm;
@@ -27,16 +24,13 @@ use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
-use Filament\Forms\Components\Wizard;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Leandrocfe\FilamentPtbrFormFields\Money;
-use PhpParser\Node\Stmt\Label;
 use Illuminate\Support\HtmlString;
 
 class CattleResource extends Resource
@@ -228,6 +222,7 @@ class CattleResource extends Resource
                                     ->columnSpanFull()
                                     ->visibility('public')
                                     ->directory('public/cattle/attachments')
+                                    ->multiple()
                                     ->downloadable(),
                             ])
                     ]),
@@ -242,14 +237,21 @@ class CattleResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('profile_photo_path')
+                    ->label('')
+                    ->circular()
+                    ->width(55)
+                    ->height(55)
+                    ->grow(false),
+                TextColumn::make('full_name')
+                    ->label('RGD')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('farm.name')
                     ->label('Fazenda')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('full_name')
-                    ->label('RGD | Nome')
-                    ->searchable()
-                    ->sortable(),
+
 
                 TextColumn::make('gender')
                     ->label('Sexo')
@@ -276,9 +278,6 @@ class CattleResource extends Resource
                     })
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\ImageColumn::make('profile_photo_path')
-                    ->label('Foto de Perfil')
-                    ->circular(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Data de Criação')
                     ->dateTime()
