@@ -68,4 +68,11 @@ class Embryo extends Model
     {
         return $this->hasMany(EmbryoStatusHistory::class);
     }
+
+    public function lastFertilizedStatus()
+    {
+        return $this->hasOne(EmbryoStatusHistory::class)
+            ->where('status', EmbryoStatus::Fertilized)
+            ->latest();
+    }
 }

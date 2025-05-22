@@ -15,6 +15,7 @@ use App\Models\EmbryoStatusHistory;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -85,33 +86,46 @@ class EmbryoResource extends Resource
                             ->optionsLimit(10),
                         Select::make('status')
                             ->label('Status')
-                            ->options(EmbryoStatus::class)
-                            ->disabled(fn(string $operation): bool => $operation == 'edit')
-                            ->suffixAction(
-                                Action::make('next_status')
-                                    ->label('Passar p/ Próximo Status')
-                                    ->icon('heroicon-o-arrow-right')
-                                    ->requiresConfirmation()
-                                    ->link()
-                                    ->hidden(fn(Embryo $embryo, string $operation): bool => $operation !== 'edit' || $embryo->status == EmbryoStatus::Selled)
-                                    ->color('success')
-                                    ->action(function (Embryo $embryo) {
-                                        if ($embryo->status == EmbryoStatus::Selled) {
-                                            return;
-                                        }
+                            ->options(options: EmbryoStatus::class),
 
-                                        $embryo->status = $embryo->status->getNextStatus();
-                                        $embryo->save();
+                        // ->disabled(fn(string $operation): bool => $operation == 'edit')
+                        // ->suffixAction(
+                        //     Action::make('next_status')
+                        //         ->label('Passar p/ Próximo Status')
+                        //         ->icon('heroicon-o-arrow-right')
+                        //         ->requiresConfirmation()
+                        //         ->link()
+                        //         ->hidden(fn(Embryo $embryo, string $operation): bool => $operation !== 'edit' || $embryo->status == EmbryoStatus::Selled)
+                        //         ->color('success')
+                        //         ->action(function (Embryo $embryo) {
+                        //             if ($embryo->status == EmbryoStatus::Selled) {
+                        //                 return;
+                        //             }
 
-                                        redirect(static::getUrl('edit', ['record' => $embryo->id,]));
-                                    }),
-                            ),
+                        //             $embryo->status = $embryo->status->getNextStatus();
+                        //             $embryo->save();
+
+                        //             redirect(static::getUrl('edit', ['record' => $embryo->id,]));
+                        //         }),
+                        // ),
                         DatePicker::make('collection_date')
-                            ->label('Data da Coleta'),
+                            ->label('Data do Cruzamento'),
+
                         ToggleButtons::make('gender')
                             ->label('Sexo')
                             ->inline()
                             ->options(Gender::class),
+                        Placeholder::make('last_fertilized_date')
+                            ->label('Previsão de Parto:')
+                            ->content(
+                                function (Embryo $embryo): string {
+                                    return $embryo->load('lastFertilizedStatus')
+                                        ->lastFertilizedStatus
+                                        ?->created_at
+                                        ?->addDays(288)
+                                        ?->translatedFormat('d/m/Y') ?? 'N/A';
+                                }
+                            )
                     ])
             ]);
     }

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\EmbryoResource\Pages;
 use App\Filament\Resources\EmbryoResource;
 use App\Filament\Widgets\EmbryoStatusHistoryChart;
 use Filament\Actions;
+use Filament\Actions\EditAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditEmbryo extends EditRecord
@@ -18,11 +19,16 @@ class EditEmbryo extends EditRecord
         ];
     }
 
-
     protected function getFooterWidgets(): array
     {
         return [
             //
         ];
+    }
+
+    //after save
+    protected function afterSave(): void
+    {
+        $this->dispatch('refreshRelation');
     }
 }

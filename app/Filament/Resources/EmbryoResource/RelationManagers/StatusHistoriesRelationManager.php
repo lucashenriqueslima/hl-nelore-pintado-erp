@@ -19,6 +19,8 @@ class StatusHistoriesRelationManager extends RelationManager
     protected static ?string $title = 'Histórco';
     protected static ?string $modelLabel = 'Histórico';
 
+    protected $listeners = ['refreshRelation' => '$refresh'];
+
     public function form(Form $form): Form
     {
         return $form
