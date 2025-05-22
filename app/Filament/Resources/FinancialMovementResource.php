@@ -154,10 +154,11 @@ class FinancialMovementResource extends Resource
                             ->label('Data de Vencimento')
                             ->hiddenOn('create'),
                         Section::make('Contrato')
+                            ->relationship('financialMovementGroup')
                             ->schema([
-                                Forms\Components\TextInput::make('financialMovementGroup.contract_number')
+                                Forms\Components\TextInput::make('contract_number')
                                     ->label('Número Identificador'),
-                                Forms\Components\FileUpload::make('financialMovementGroup.attachments')
+                                Forms\Components\FileUpload::make('attachments')
                                     ->label('Anexos')
                                     ->columnSpanFull()
                                     ->multiple()
