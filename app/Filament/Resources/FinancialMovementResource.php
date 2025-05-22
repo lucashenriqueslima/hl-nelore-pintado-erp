@@ -155,6 +155,7 @@ class FinancialMovementResource extends Resource
                             ->hiddenOn('create'),
                         Section::make('Contrato')
                             ->relationship('financialMovementGroup')
+                            ->dehydrated()
                             ->schema([
                                 Forms\Components\TextInput::make('contract_number')
                                     ->label('Número Identificador'),
@@ -177,6 +178,7 @@ class FinancialMovementResource extends Resource
     {
         return $table
             ->recordUrl(null)
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('financialMovementGroup.id')
                     ->label('Grupo ID')
