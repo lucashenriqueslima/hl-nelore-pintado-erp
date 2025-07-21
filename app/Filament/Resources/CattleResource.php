@@ -263,7 +263,7 @@ class CattleResource extends Resource
                     ->badge()
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('age_in_words')
+                TextColumn::make('birth_date')
                     ->label('Idade por extenso')
                     ->getStateUsing(function (Cattle $cattle) {
                         if ($cattle->birth_date == null) {
