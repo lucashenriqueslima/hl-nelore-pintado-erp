@@ -245,7 +245,7 @@ class CattleResource extends Resource
                     ->grow(false),
                 TextColumn::make('full_name')
                     ->label('RGD')
-                    ->searchable()
+                    ->searchable(['rgd', 'name'])
                     ->sortable(),
                 TextColumn::make('farm.name')
                     ->label('Fazenda')
