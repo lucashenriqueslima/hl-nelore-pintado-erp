@@ -38,7 +38,7 @@ return [
     |
     */
 
-    'server' => env('OCTANE_SERVER', 'roadrunner'),
+    'server' => env('OCTANE_SERVER', 'swoole'),
 
     /*
     |--------------------------------------------------------------------------
@@ -220,5 +220,20 @@ return [
     */
 
     'max_execution_time' => 30,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Swoole Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Here you may configure some of the Swoole specific options used by
+    | Laravel Octane. Disabling opcode cache clearing can help prevent
+    | container resolution issues during worker startup.
+    |
+    */
+
+    'swoole' => [
+        'clear_opcache' => false,
+    ],
 
 ];
