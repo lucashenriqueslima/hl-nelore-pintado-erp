@@ -26,6 +26,11 @@ class MotherRelationManager extends RelationManager
         return $ownerRecord->gender == Gender::FEMALE && $ownerRecord->type == CattleType::PO;
     }
 
+    public function isReadOnly(): bool
+    {
+        return true;
+    }
+
     public function form(Form $form): Form
     {
         return $form
@@ -39,10 +44,10 @@ class MotherRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('full_name')
                     ->label('RGD | Nome')
-                    ->url(fn(Cattle $record): string => RouterHelper::getRoute('cattle', ['record' => $record->id])),
+                    ->url(fn(?Cattle $record): ?string => $record ? RouterHelper::getRoute('cattle', ['record' => $record->id]) : null),
                 Tables\Columns\TextColumn::make('father.full_name')
                     ->label('Pai')
-                    ->url(fn(Model $record): string => RouterHelper::getRoute('cattle', ['record' => $record->father_id])),
+                    ->url(fn(?Cattle $record): ?string => $record?->father_id ? RouterHelper::getRoute('cattle', ['record' => $record->father_id]) : null),
             ])
             ->filters([
                 //

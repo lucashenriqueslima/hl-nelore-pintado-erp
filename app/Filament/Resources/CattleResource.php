@@ -9,6 +9,7 @@ use App\Filament\Resources\CattleResource\Pages;
 use App\Filament\Resources\CattleResource\RelationManagers\EmbryoFatherRelationManager;
 use App\Filament\Resources\CattleResource\RelationManagers\EmbryoMotherRelationManager;
 use App\Filament\Resources\CattleResource\RelationManagers\EmbryoReceiverRelationManager;
+use App\Filament\Resources\CattleResource\RelationManagers\MotherRelationManager;
 use App\Filament\Resources\CattleResource\RelationManagers\WeightsRelationManager;
 use App\Models\Cattle;
 use App\Models\Farm;
@@ -311,7 +312,7 @@ class CattleResource extends Resource
         return [
             WeightsRelationManager::class,
             // FatherRelationManager::class,
-            // MotherRelationManager::class,
+            MotherRelationManager::class,
             EmbryoFatherRelationManager::class,
             EmbryoMotherRelationManager::class,
             EmbryoReceiverRelationManager::class,

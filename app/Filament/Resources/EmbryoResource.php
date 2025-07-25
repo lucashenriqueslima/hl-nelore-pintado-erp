@@ -24,6 +24,7 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -143,13 +144,13 @@ class EmbryoResource extends Resource
                     ->label('RGD')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('is_sexed_semen')
+                IconColumn::make('is_sexed_semen')
                     ->label('Sêmen sexado?')
-                    ->searchable()
+                    ->boolean()
                     ->sortable(),
-                TextColumn::make('was_purchased')
+                IconColumn::make('was_purchased')
                     ->label('Foi comprado?')
-                    ->searchable()
+                    ->boolean()
                     ->sortable(),
                 TextColumn::make('father.name')
                     ->label('Pai')
@@ -176,11 +177,7 @@ class EmbryoResource extends Resource
                     ->label('Status')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('mating_date')
-                    ->label('Data do Cruzamento')
-                    ->date()
-                    ->searchable()
-                    ->sortable(),
+
                 TextColumn::make('gender')
                     ->label('Sexo')
                     ->searchable()

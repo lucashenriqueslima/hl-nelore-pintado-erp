@@ -40,13 +40,12 @@ class EmbryoMotherRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('rgd')
                     ->label('RGD')
-                    ->url(fn(Model $record): string => RouterHelper::getRoute('embryos', ['record' => $record->id])),
-                Tables\Columns\TextColumn::make('father.full_name')
+                    ->url(fn(?Model $record): ?string => $record ? RouterHelper::getRoute('embryos', ['record' => $record->id]) : null)
                     ->label('Pai')
-                    ->url(fn(Model $record): string => RouterHelper::getRoute('cattle', ['record' => $record->father_id])),
+                    ->url(fn(?Model $record): ?string => $record?->father_id ?  RouterHelper::getRoute('cattle', ['record' => $record->father_id]) : null),
                 Tables\Columns\TextColumn::make('receiver.full_name')
                     ->label('Receptora')
-                    ->url(fn(Model $record): string => RouterHelper::getRoute('cattle', ['record' => $record->mother_id])),
+                    ->url(fn(?Model $record): ?string => $record?->mother_id ? RouterHelper::getRoute('cattle', ['record' => $record->mother_id]) : null),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status'),
             ])
