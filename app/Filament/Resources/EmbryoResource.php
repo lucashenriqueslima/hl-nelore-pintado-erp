@@ -12,6 +12,7 @@ use App\Filament\Resources\EmbryoResource\RelationManagers\StatusHistoriesRelati
 use App\Models\Cattle;
 use App\Models\Embryo;
 use App\Models\EmbryoStatusHistory;
+use Dom\Text;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DatePicker;
@@ -44,10 +45,13 @@ class EmbryoResource extends Resource
                     ->schema([
                         TextInput::make('rgd')
                             ->label('RGD')
-                            ->unique(ignoreRecord: true)
-                            ->required(),
+                            ->unique(ignoreRecord: true),
                         ToggleButtons::make('is_sexed_semen')
                             ->label('Sêmen é Sexado?')
+                            ->inline()
+                            ->boolean(),
+                        ToggleButtons::make('was_purchased')
+                            ->label('Foi Comprado?')
                             ->inline()
                             ->boolean(),
                         Select::make('father_id')
@@ -86,7 +90,8 @@ class EmbryoResource extends Resource
                             ->optionsLimit(10),
                         Select::make('status')
                             ->label('Status')
-                            ->options(options: EmbryoStatus::class),
+                            ->options(options: EmbryoStatus::class)
+                            ->required(),
 
                         // ->disabled(fn(string $operation): bool => $operation == 'edit')
                         // ->suffixAction(
@@ -138,19 +143,33 @@ class EmbryoResource extends Resource
                     ->label('RGD')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('is_sexed_semen')
+                    ->label('Sêmen sexado?')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('was_purchased')
+                    ->label('Foi comprado?')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('father.name')
                     ->label('Pai')
-                    ->url(fn(Embryo $embryo): string => RouterHelper::getRoute('cattle', ['record' => $embryo->father_id]))
+                    ->url(fn(?Embryo $embryo): ?string => $embryo?->father_id
+                        ? RouterHelper::getRoute('cattle', ['record' => $embryo->father_id])
+                        : null)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('mother.name')
                     ->label('Mãe')
-                    ->url(fn(Embryo $embryo): string => RouterHelper::getRoute('cattle', ['record' => $embryo->mother_id]))
+                    ->url(fn(?Embryo $embryo): ?string => $embryo?->mother_id
+                        ? RouterHelper::getRoute('cattle', ['record' => $embryo->mother_id])
+                        : null)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('receiver.name')
                     ->label('Receptora')
-                    ->url(fn(Embryo $embryo): string => RouterHelper::getRoute('cattle', ['record' => $embryo->receiver_id]))
+                    ->url(fn(?Embryo $embryo): ?string => $embryo?->receiver_id
+                        ? RouterHelper::getRoute('cattle', ['record' => $embryo->receiver_id])
+                        : null)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('status')
