@@ -10,6 +10,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Tables\Table;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -35,6 +36,11 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Green,
             ])
             ->spa()
+            ->bootUsing(
+                function () {
+                    Table::configureUsing(fn($table) => $table->paginationPageOptions([10, 25, 50, 100]));
+                }
+            )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
