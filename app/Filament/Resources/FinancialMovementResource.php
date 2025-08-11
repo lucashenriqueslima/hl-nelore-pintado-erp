@@ -155,7 +155,7 @@ class FinancialMovementResource extends Resource
                             ->hiddenOn('create'),
                         Section::make('Contrato')
                             ->relationship('financialMovementGroup')
-                            ->dehydrated()
+                            ->dehydrated(fn(string $operation): bool => $operation === 'create')
                             ->schema([
                                 Forms\Components\TextInput::make('contract_number')
                                     ->label('Número Identificador'),
