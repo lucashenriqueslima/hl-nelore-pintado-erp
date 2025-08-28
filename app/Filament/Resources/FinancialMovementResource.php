@@ -186,7 +186,9 @@ class FinancialMovementResource extends Resource
                     ->searchable(),
                 TextColumn::make('installment_number_with_total')
                     ->label('Parcela')
-                    ->sortable(),
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy('installment_number', $direction);
+                    }),
                 TextColumn::make('financialMovementGroup.contract_number')
                     ->label('Contrato')
                     ->sortable()
@@ -202,7 +204,6 @@ class FinancialMovementResource extends Resource
                     ->searchable(['name']),
                 TextColumn::make('movementable.full_name')
                     ->label('Gado/Embrião')
-                    ->sortable()
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         return $query->where(function (Builder $query) use ($search) {
                             $query->whereHasMorph('movementable', [Cattle::class], function (Builder $query) use ($search) {
